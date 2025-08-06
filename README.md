@@ -132,6 +132,10 @@ python src/test_DLoRAL.py     \
 -o /path/to/results
 ```
 
+```
+python src/test_DLoRAL.py --pretrained_model_path stabilityai/stable-diffusion-2-1-base --ram_ft_path preset/models/DAPE.pth --ram_path 'preset/models/ram_swin_large_14m.pth' --merge_and_unload_lora False --process_size 512 --pretrained_model_name_or_path stabilityai/stable-diffusion-2-1-base --vae_encoder_tiled_size 4096 --load_cfr --pretrained_path preset/models/checkpoints/model.pkl --stages 1 -i input_videos/ -o results
+```
+
 ## ⚙️ Training
 For Real-World Video Super-Resolution:
 

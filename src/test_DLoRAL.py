@@ -1,6 +1,7 @@
 import os
 import argparse
 import time
+import traceback
 
 import numpy as np
 from PIL import Image
@@ -151,6 +152,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    print(f"args: {args}")
+
     # initialize the model
     model = Generator_eval(args)
     model.set_eval()
@@ -161,6 +164,8 @@ if __name__ == "__main__":
         # Handle single video case (if input is a single video file)
         all_video_data = [(os.path.basename(args.input_image).split('.')[0], extract_frames(args.input_image))]
 
+    print(f"all_video_data: {all_video_data}")
+
     # get ram model
     DAPE = ram(pretrained=args.ram_path,
                pretrained_condition=args.ram_ft_path,
@@ -168,6 +173,8 @@ if __name__ == "__main__":
                vit='swin_l')
     DAPE.eval()
     DAPE.to("cuda")
+
+    print("DAPE loaded")
 
     # weight type
     weight_dtype = torch.float32
@@ -199,6 +206,8 @@ if __name__ == "__main__":
     frame_num = 2
     frame_overlap = 1
 
+    print("start processing")
+
     for video_name, video_frame_images in all_video_data:
         print(f"Processing frames for video: {video_name}")
 
@@ -224,6 +233,7 @@ if __name__ == "__main__":
             resize_flag = False
 
             # If the image is smaller than the required size, scale it up
+            # 如果图片小于处理尺寸，则缩放图片
             if ori_width < args.process_size // rscale or ori_height < args.process_size // rscale:
                 scale = (args.process_size // rscale) / min(ori_width, ori_height)
                 input_image = input_image.resize((int(scale * ori_width), int(scale * ori_height)))
@@ -231,10 +241,12 @@ if __name__ == "__main__":
                 resize_flag = True
             
             # Upscale the image dimensions by the upscale factor
+            # 按照超分倍数缩放图片
             input_image = input_image.resize((input_image.size[0] * rscale, input_image.size[1] * rscale))
             input_image_gray = input_image_gray.resize((input_image_gray.size[0] * rscale, input_image_gray.size[1] * rscale))
 
             # Adjust the image dimensions to make sure they are a multiple of 8
+            # 调整图片尺寸为8的倍数
             new_width = input_image.width - input_image.width % 8
             new_height = input_image.height - input_image.height % 8
             input_image = input_image.resize((new_width, new_height), Image.LANCZOS)
@@ -244,6 +256,7 @@ if __name__ == "__main__":
             bname_batch.append(bname)
 
             # If a prompt does not already exist, generate one
+            # 如果prompt不存在，则生成一个
             if exist_prompt == 0:
                 # get caption
                 validation_prompt = get_validation_prompt(args, input_image, DAPE)

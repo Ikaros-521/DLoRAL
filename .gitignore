@@ -17,3 +17,8 @@ node_modules
 .history
 tmp
 Miniconda3
+preset
+ram/__pycache__
+results
+*.pyc
+__pycache__
