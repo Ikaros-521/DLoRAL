@@ -19,6 +19,9 @@ tmp
 Miniconda3
 preset
 ram/__pycache__
+ram/__pycache__/*.pyc
 results
 *.pyc
-__pycache__
+ffmpeg
+hf_download
+*.bat
